@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Grid, Container } from "@material-ui/core";
+import { Grid, Container } from "@mui/material";
 import CreateIdea from "./CreateIdea";
 import IdeaTable from "./IdeaTable";
 
-const Home = props => {
+const Home = (props) => {
   const { user } = props;
   const [ideas, setIdeas] = useState([]);
   const [idea, setIdea] = useState({ detail: "", title: "" });

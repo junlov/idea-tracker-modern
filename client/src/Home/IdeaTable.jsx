@@ -6,10 +6,10 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  TableBody
-} from "@material-ui/core";
+  TableBody,
+} from "@mui/material";
 
-const IdeaTable = props => {
+const IdeaTable = (props) => {
   const { ideas, setIdeas } = props;
   useEffect(() => {
     const getIdeas = new Request("/api/ideas");
@@ -35,7 +35,7 @@ const IdeaTable = props => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {ideas.map(idea => {
+          {ideas.map((idea) => {
             return (
               <TableRow key={idea._id}>
                 <TableCell>{idea.title}</TableCell>

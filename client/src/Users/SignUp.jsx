@@ -4,12 +4,12 @@ import {
   Button,
   Container,
   IconButton,
-  Snackbar
-} from "@material-ui/core";
-import { Close } from "@material-ui/icons";
+  Snackbar,
+} from "@mui/material";
+import { Close } from "@mui/icons-material";
 import { Redirect } from "react-router-dom";
 
-const SignUp = props => {
+const SignUp = (props) => {
   const { setUser } = props;
   const [potentialUser, setPotentialUser] = useState({
     email: "",
@@ -17,13 +17,13 @@ const SignUp = props => {
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    rank: ""
+    rank: "",
   });
 
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
   const [passwordsMatch, setPasswordsMatch] = useState(false);
-  const onChange = e => {
+  const onChange = (e) => {
     setPotentialUser({ ...potentialUser, [e.target.id]: e.target.value });
     if (e.target.id === "confirmPassword" || e.target.id === "password") {
       if (potentialUser.password === potentialUser.confirmPassword) {
@@ -33,7 +33,7 @@ const SignUp = props => {
       }
     }
   };
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     const userSignUpHeaders = new Headers();
     userSignUpHeaders.append("Content-Type", "application/json");
@@ -42,7 +42,7 @@ const SignUp = props => {
     const userSignUpOptions = {
       method: "POST",
       headers: userSignUpHeaders,
-      body
+      body,
     };
     const userSignUpRequest = new Request("/api/users/", userSignUpOptions);
     const response = await fetch(userSignUpRequest);
@@ -142,7 +142,7 @@ const SignUp = props => {
         <Snackbar
           anchorOrigin={{
             vertical: "bottom",
-            horizontal: "left"
+            horizontal: "left",
           }}
           open={open}
           autoHideDuration={6000}

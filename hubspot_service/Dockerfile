@@ -1,12 +1,12 @@
-FROM node:12.10.0-alpine
+FROM node:19-bullseye
 
 WORKDIR /usr/app
 
 COPY ./package.json ./
 
-COPY ./yarn.lock ./
+COPY ./package-lock.json ./
 
-RUN yarn install --frozen-lockfile
+RUN npm install
 
 COPY . .
 
@@ -14,4 +14,4 @@ RUN echo "copied everythign over for server"
 
 EXPOSE 8080
 
-CMD ["yarn", "start"]
+CMD ["npm", "start"]

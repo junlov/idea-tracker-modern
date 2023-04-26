@@ -19,26 +19,21 @@ const { hubspotClient } = require("./utils");
 const app = express();
 var apiRouter = express.Router();
 
-const {
-  CLIENT_ID,
-  BASE_URL,
-  SCOPES,
-  CLIENT_SECRET,
-  KAFKA_BROKER_LIST
-} = process.env;
+const { CLIENT_ID, BASE_URL, SCOPES, CLIENT_SECRET, KAFKA_BROKER_LIST } =
+  process.env;
 
 const client = new kafka.KafkaClient({ kafkaHost: KAFKA_BROKER_LIST });
 
 const consumer = new kafka.Consumer(client, [
-  { topic: "contact.propertyChange" }
+  { topic: "contact.propertyChange" },
 ]);
 
-consumer.on("message", message => {
+consumer.on("message", (message) => {
   console.log(message);
   userHandler(message);
 });
 
-consumer.on("error", err => {
+consumer.on("error", (err) => {
   console.log(err);
 });
 
@@ -46,7 +41,7 @@ const REDIRECT_URL = `${BASE_URL}/oauth/callback`;
 
 app.use(bodyParser.json());
 
-const getAndSaveHubSpotContacts = async accessToken => {
+const getAndSaveHubSpotContacts = async (accessToken) => {
   console.log("Getting Contacts From HubSpot");
   try {
     const hubspotContacts = await axios.get(
@@ -63,7 +58,7 @@ const getAndSaveHubSpotContacts = async accessToken => {
   }
 };
 
-const setUpHubSpotProperties = async accessToken => {
+const setUpHubSpotProperties = async (accessToken) => {
   console.log("Setting Up Properties");
   try {
     propertiesResponse = await axios.get(
@@ -135,7 +130,7 @@ const createExistingContacts = async (accessToken, pageNumber) => {
   }
 };
 
-const createOrUpdateCompanies = async accessToken => {
+const createOrUpdateCompanies = async (accessToken) => {
   console.log("Creating or Updating Companies");
   try {
     const allFactions = await Faction.find({});
@@ -144,7 +139,7 @@ const createOrUpdateCompanies = async accessToken => {
         `http://hubspot_service:8080/api/companies/create-or-update/${faction.domain}/${accessToken}`
       );
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log("company", company.data);
     }
   } catch (err) {
@@ -152,7 +147,7 @@ const createOrUpdateCompanies = async accessToken => {
   }
 };
 
-const initialSyncWithHubSpot = async accessToken => {
+const initialSyncWithHubSpot = async (accessToken) => {
   await getAndSaveHubSpotContacts(accessToken);
   await setUpHubSpotProperties(accessToken);
   await updateExistingHubSpotContacts(accessToken, 0);
@@ -200,7 +195,7 @@ apiRouter.use("/users", userRouter);
 apiRouter.use("/ideas", ideaRouter);
 app.use("/api", apiRouter);
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.status(404).send("The Web Service doesn't know what you are looking for");
 });
 

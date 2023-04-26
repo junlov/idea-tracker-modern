@@ -1,22 +1,22 @@
-FROM node:12.10.0-alpine
+FROM node:19-bullseye
 
 WORKDIR /usr/app
 
 COPY ./package.json ./
 
-COPY ./yarn.lock ./
+COPY ./package-lock.json ./
 
 #https://github.com/kelektiv/node.bcrypt.js/wiki/Installation-Instructions#docker
-RUN apk --no-cache add --virtual builds-deps build-base python
+# RUN apk --no-cache add --virtual builds-deps build-base python
 
-RUN yarn install --frozen-lockfile
+RUN npm install
 
-RUN npm rebuild bcrypt --build-from-source
+# RUN npm rebuild bcrypt --build-from-source
 
 COPY . .
 
-RUN echo "copied everythign over for server"
+RUN echo "copied everything over for server"
 
 EXPOSE 8080
 
-CMD ["yarn", "start"]
+CMD ["npm", "start"]

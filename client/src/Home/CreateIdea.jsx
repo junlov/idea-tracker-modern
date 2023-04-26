@@ -1,13 +1,13 @@
 import React from "react";
-import { TextField, Button, Paper } from "@material-ui/core";
+import { TextField, Button, Paper } from "@mui/material";
 
-const CreateIdea = props => {
+const CreateIdea = (props) => {
   const { idea, ideas, setIdea, setIdeas, user } = props;
 
-  const onChange = e => {
+  const onChange = (e) => {
     setIdea({ ...idea, [e.target.id]: e.target.value });
   };
-  const addIdea = async e => {
+  const addIdea = async (e) => {
     e.preventDefault();
     const addIdeaHeaders = new Headers();
     addIdeaHeaders.append("Content-Type", "application/json");
@@ -17,7 +17,7 @@ const CreateIdea = props => {
     const addIdeaOptions = {
       method: "POST",
       headers: addIdeaHeaders,
-      body
+      body,
     };
     const addIdeaRequest = new Request("/api/ideas", addIdeaOptions);
     const response = await fetch(addIdeaRequest);

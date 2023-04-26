@@ -4,15 +4,15 @@ import {
   Button,
   Container,
   IconButton,
-  Snackbar
-} from "@material-ui/core";
-import { Close } from "@material-ui/icons";
+  Snackbar,
+} from "@mui/material";
+import { Close } from "@mui/icons-material";
 import { Redirect } from "react-router-dom";
 
-const Profile = props => {
+const Profile = (props) => {
   const { user, setUser } = props;
   const [updateSuccess, setUpdateSuccess] = useState(false);
-  const onChange = e => {
+  const onChange = (e) => {
     setUser({ ...user, [e.target.id]: e.target.value });
   };
   const [open, setOpen] = useState(false);
@@ -24,7 +24,7 @@ const Profile = props => {
     setOpen(false);
   };
   const [message, setMessage] = useState("failed to update user profile");
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     const userEditHeaders = new Headers();
     userEditHeaders.append("Content-Type", "application/json");
@@ -33,7 +33,7 @@ const Profile = props => {
     const userEditOptions = {
       method: "PUT",
       headers: userEditHeaders,
-      body
+      body,
     };
     const userEditRequest = new Request("/api/users/", userEditOptions);
     const response = await fetch(userEditRequest);
@@ -96,7 +96,7 @@ const Profile = props => {
         <Snackbar
           anchorOrigin={{
             vertical: "bottom",
-            horizontal: "left"
+            horizontal: "left",
           }}
           open={open}
           autoHideDuration={6000}

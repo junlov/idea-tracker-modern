@@ -5,23 +5,23 @@ import {
   Container,
   IconButton,
   Snackbar,
-  Link as MaterialLink
-} from "@material-ui/core";
-import { Close } from "@material-ui/icons";
+  Link as MaterialLink,
+} from "@mui/material";
+import { Close } from "@mui/icons-material";
 import { Redirect, Link } from "react-router-dom";
 
-const Login = props => {
+const Login = (props) => {
   const { setUser } = props;
   const [potentialUser, setPotentialUser] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
-  const onChange = e => {
+  const onChange = (e) => {
     setPotentialUser({ ...potentialUser, [e.target.id]: e.target.value });
   };
 
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     const userLoginHeaders = new Headers();
     userLoginHeaders.append("Content-Type", "application/json");
@@ -30,7 +30,7 @@ const Login = props => {
     const userLoginOptions = {
       method: "POST",
       headers: userLoginHeaders,
-      body
+      body,
     };
     const userLoginRequest = new Request("/api/users/login", userLoginOptions);
     const response = await fetch(userLoginRequest);
@@ -90,7 +90,7 @@ const Login = props => {
         <Snackbar
           anchorOrigin={{
             vertical: "bottom",
-            horizontal: "center"
+            horizontal: "center",
           }}
           open={open}
           autoHideDuration={6000}

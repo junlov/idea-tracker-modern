@@ -1,18 +1,18 @@
 
-FROM node:12.10.0
+FROM node:19-bullseye
 
 WORKDIR /usr/app
 
 COPY package.json ./
 
-COPY yarn.lock ./
+COPY ./package-lock.json ./
 
-RUN yarn install --frozen-lockfile
+RUN npm i
 
 COPY . .
 
 RUN echo "copied everything over for client"
 
-EXPOSE 3000
+EXPOSE 5173
 
-CMD ["yarn", "start"]
+CMD ["npm", "run", "dev"]

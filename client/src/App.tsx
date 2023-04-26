@@ -1,22 +1,20 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Button,
   AppBar,
   Toolbar,
   IconButton,
   Typography,
-  Link as MaterialLink
-} from "@material-ui/core";
-import { Menu } from "@material-ui/icons";
+  Link as MaterialLink,
+} from "@mui/material";
+import { Menu } from "@mui/icons-material";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link,
-  Redirect
+  Redirect,
 } from "react-router-dom";
-
-import "./App.css";
 
 import Home from "./Home/Home";
 
@@ -25,10 +23,12 @@ import SignUp from "./Users/SignUp";
 import Login from "./Users/Login";
 import Profile from "./Users/Profile";
 
+import "./App.css";
+
 function App() {
   const [user, setUser] = useState({});
 
-  const isLoggedIn = user =>
+  const isLoggedIn = (user) =>
     !(Object.entries(user).length === 0 && user.constructor === Object);
 
   return (

@@ -6,7 +6,8 @@ services:
       - "2181"
     tmpfs: "/datalog"
   kafka:
-    image: wurstmeister/kafka
+    image: "bitnami/kafka:latest"
+    hostname: kafka
     expose:
       - "9092"
     volumes:
@@ -51,7 +52,7 @@ services:
     depends_on:
       - web_service
     ports:
-      - "3000:3000"
+      - "5173:5173"
     env_file: ./.env
   mongo:
     # upgrade to https://medium.com/faun/managing-mongodb-on-docker-with-docker-compose-26bf8a0bbae3 later
