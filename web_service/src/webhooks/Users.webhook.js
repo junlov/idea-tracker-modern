@@ -1,4 +1,4 @@
-const Users = require("./Users.model");
+const Users = require("../models/Users.model");
 const { fieldMapping } = require("../utils");
 
 const userHandler = async (message) => {

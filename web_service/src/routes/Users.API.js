@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
-const Users = require("./Users.model");
-const Faction = require("./Factions.model");
+const Users = require("../models/Users.model");
+const Faction = require("../models/Factions.model");
 const { getAccessToken } = require("../utils");
 var userRouter = express.Router();
 

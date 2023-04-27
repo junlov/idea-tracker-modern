@@ -44,7 +44,10 @@ const SignUp = (props) => {
       headers: userSignUpHeaders,
       body,
     };
-    const userSignUpRequest = new Request("/api/users/", userSignUpOptions);
+    const userSignUpRequest = new Request(
+      "http://localhost:8080/api/users/",
+      userSignUpOptions
+    );
     const response = await fetch(userSignUpRequest);
     if (response.status === 200) {
       const responseJSON = await response.json();

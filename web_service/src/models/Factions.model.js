@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const User = require("./models/Users.model");
+const User = require("./Users.model");
 const factionSchema = new mongoose.Schema({
   domain: {
     type: String,

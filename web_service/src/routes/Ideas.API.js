@@ -1,5 +1,5 @@
 const express = require("express");
-const Idea = require("./Ideas.model");
+const Idea = require("../models/Ideas.model");
 var ideaRouter = express.Router();
 
 const createTimeLineEvent = async (idea) => {

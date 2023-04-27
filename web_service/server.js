@@ -1,41 +1,46 @@
+require("dotenv").config();
+
 const express = require("express");
+const cors = require("cors");
 
 const bodyParser = require("body-parser");
 const path = require("path");
 const axios = require("axios");
 
-const kafka = require("kafka-node");
+// const kafka = require("kafka-node");
 
-const connectDb = require("./connection");
+const connectDb = require("./src/connection");
 
-const Account = require("./models/Accounts.model");
-const Faction = require("./models/Factions.model");
-const Users = require("./models/Users.model");
-const userRouter = require("./routes/Users.API");
-const userHandler = require("./webhooks/Users.webhook");
-const ideaRouter = require("./routes/Ideas.API");
-const { hubspotClient } = require("./utils");
+const Account = require("./src/models/Accounts.model");
+const Faction = require("./src/models/Factions.model");
+const Users = require("./src/models/Users.model");
+const userRouter = require("./src/routes/Users.API");
+const userHandler = require("./src/webhooks/Users.webhook");
+const ideaRouter = require("./src/routes/Ideas.API");
+const { hubspotClient } = require("./src/utils");
 
 const app = express();
+app.use(cors());
+
 var apiRouter = express.Router();
 
 const { CLIENT_ID, BASE_URL, SCOPES, CLIENT_SECRET, KAFKA_BROKER_LIST } =
   process.env;
 
-const client = new kafka.KafkaClient({ kafkaHost: KAFKA_BROKER_LIST });
+// const client = new kafka.KafkaClient({ kafkaHost: KAFKA_BROKER_LIST });
 
-const consumer = new kafka.Consumer(client, [
-  { topic: "contact.propertyChange" },
-]);
+// const consumer = new kafka.Consumer(client, [
+//   { topic: "contact.propertyChange" },
+// ]);
 
-consumer.on("message", (message) => {
-  console.log(message);
-  userHandler(message);
-});
+// consumer.on("message", (message) => {
+//   console.log(message);
+//   userHandler(message);
+// });
 
-consumer.on("error", (err) => {
-  console.log(err);
-});
+// consumer.on("error", (err) => {
+//   console.log(err);
+// });
 
 const REDIRECT_URL = `${BASE_URL}/oauth/callback`;
 

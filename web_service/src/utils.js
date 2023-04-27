@@ -1,4 +1,4 @@
-const Account = require("./Accounts.model");
+const Account = require("./models/Accounts.model");
 
 const hubspot = require("@hubspot/api-client");
 
