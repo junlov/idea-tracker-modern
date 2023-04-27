@@ -50,7 +50,13 @@ const getAndSaveHubSpotContacts = async (accessToken) => {
   console.log("Getting Contacts From HubSpot");
   try {
     const hubspotContacts = await axios.get(
-      `http://localhost:8081/api/contacts/${accessToken}`
+      `http://localhost:8081/api/contacts/${accessToken}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
     );
     for (const contact of hubspotContacts.data) {
       const user = await Users.findOneAndUpdate(
@@ -67,7 +73,13 @@ const setUpHubSpotProperties = async (accessToken) => {
   console.log("Setting Up Properties");
   try {
     propertiesResponse = await axios.get(
-      `http://localhost:8081/api/properties/${accessToken}`
+      `http://localhost:8081/api/properties/${accessToken}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
     );
   } catch (err) {
     console.log(err);
@@ -86,6 +98,12 @@ const updateExistingHubSpotContacts = async (accessToken, pageNumber) => {
     );
     await axios.post(
       `http://localhost:8081/api/contacts/update/${accessToken}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      },
       pageOfContactsFromDB
     );
     console.log(pageOfContactsFromDB);
@@ -113,6 +131,12 @@ const createExistingContacts = async (accessToken, pageNumber) => {
     );
     const createResponse = await axios.post(
       `http://localhost:8081/api/contacts/create/${accessToken}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      },
       pageOfContactsFromDB
     );
 
@@ -141,7 +165,13 @@ const createOrUpdateCompanies = async (accessToken) => {
     const allFactions = await Faction.find({});
     for (const faction of allFactions) {
       const company = await axios.get(
-        `http://localhost:8081/api/companies/create-or-update/${faction.domain}/${accessToken}`
+        `http://localhost:8081/api/companies/create-or-update/${faction.domain}/${accessToken}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -172,16 +202,24 @@ app.get("/oauth/connect", async (req, res) => {
 
 app.get("/oauth/callback", async (req, res, next) => {
   const { code } = req.query;
+  console.log("Callback - does it do anything here?");
   try {
-    const tokensResponse = await hubspotClient.oauth.defaultApi.createToken(
+    console.log("Step 0");
+    const tokensResponse = await hubspotClient.oauth.tokensApi.createToken(
       "authorization_code",
       code,
       REDIRECT_URL,
       CLIENT_ID,
       CLIENT_SECRET
     );
-    const { accessToken, refreshToken, expiresIn } = tokensResponse.body;
+    console.log("Step 1");
+    console.log("tokenResponse", tokensResponse);
+
+    const { accessToken, refreshToken, expiresIn } = tokensResponse;
+    console.log("Step 2");
+
     const expiresAt = new Date(Date.now() + expiresIn);
+    console.log("Step 3");
 
     const accountInfo = await Account.findOneAndUpdate(
       { accountId: 1 },
@@ -192,6 +230,7 @@ app.get("/oauth/callback", async (req, res, next) => {
     initialSyncWithHubSpot(accessToken);
     res.redirect("/");
   } catch (err) {
+    console.log("/oauth/callback error");
     next(err);
   }
 });
@@ -205,6 +244,7 @@ app.use(function (req, res, next) {
 });
 
 app.use((err, req, res, next) => {
+  console.log("It just ends here...500");
   console.log(err.toString());
   res.status(500).send(err.toString());
 });
@@ -212,6 +252,6 @@ app.use((err, req, res, next) => {
 console.log("process environment", process.env.NODE_ENV);
 app.listen(process.env.PORT || 8080, () => {
   connectDb().then(() => {
-    console.log("database connected");
+    console.log("database connected", process.env.port || 8080);
   });
 });

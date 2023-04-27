@@ -13,7 +13,7 @@ const getAccessToken = async (accountId) => {
     if (Date(expiresAt) < Date.now()) {
       return accessToken;
     } else {
-      const result = await hubspotClient.oauth.defaultApi.createToken(
+      const result = await hubspotClient.oauth.tokensApi.createToken(
         "refresh_token",
         undefined,
         undefined,
