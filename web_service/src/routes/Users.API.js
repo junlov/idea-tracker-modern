@@ -2,10 +2,10 @@ const express = require("express");
 const axios = require("axios");
 const Users = require("./Users.model");
 const Faction = require("./Factions.model");
-const { getAccessToken } = require("./utils");
+const { getAccessToken } = require("../utils");
 var userRouter = express.Router();
 
-const updateContactOnSave = async contactToUpdate => {
+const updateContactOnSave = async (contactToUpdate) => {
   const accessToken = await getAccessToken(1);
   try {
     await axios.put(
@@ -45,10 +45,10 @@ userRouter.post("/", async (req, res, next) => {
     const savedUser = await newUser.save();
     const faction = await Faction.findOneAndUpdate(
       {
-        domain
+        domain,
       },
       {
-        $push: { members: savedUser._id }
+        $push: { members: savedUser._id },
       },
       { upsert: true, new: true }
     );

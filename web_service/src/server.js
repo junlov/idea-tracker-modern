@@ -8,12 +8,12 @@ const kafka = require("kafka-node");
 
 const connectDb = require("./connection");
 
-const Account = require("./Accounts.model");
-const Faction = require("./Factions.model");
-const Users = require("./Users.model");
-const userRouter = require("./Users.API");
-const userHandler = require("./Users.webhook");
-const ideaRouter = require("./Ideas.API");
+const Account = require("./models/Accounts.model");
+const Faction = require("./models/Factions.model");
+const Users = require("./models/Users.model");
+const userRouter = require("./routes/Users.API");
+const userHandler = require("./webhooks/Users.webhook");
+const ideaRouter = require("./routes/Ideas.API");
 const { hubspotClient } = require("./utils");
 
 const app = express();

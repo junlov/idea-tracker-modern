@@ -1,10 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const hubspot = require("@hubspot/api-client");
-const webhookRouter = require("./webhooks");
+// const webhookRouter = require("./webhooks");
 
 const app = express();
 const apiRouter = express.Router();
+require("dotenv").config();
 
 app.use(bodyParser.json());
 
@@ -59,9 +60,8 @@ apiRouter.post("/contacts/create/:accessToken", async (req, res, next) => {
     };
   });
   try {
-    const createResponse = await hubspotClient.crm.contacts.batchApi.createBatch(
-      { inputs }
-    );
+    const createResponse =
+      await hubspotClient.crm.contacts.batchApi.createBatch({ inputs });
     console.log(createResponse.body);
     res.send(createResponse.body);
   } catch (err) {
@@ -83,9 +83,8 @@ apiRouter.post("/contacts/update/:accessToken", async (req, res, next) => {
   });
 
   try {
-    const updateResponse = await hubspotClient.crm.contacts.batchApi.updateBatch(
-      { inputs }
-    );
+    const updateResponse =
+      await hubspotClient.crm.contacts.batchApi.updateBatch({ inputs });
     console.log(updateResponse.body);
     res.send(updateResponse.body);
   } catch (err) {
@@ -118,9 +117,8 @@ apiRouter.get(
       ],
     };
     try {
-      const companiesByDomain = await hubspotClient.crm.companies.searchApi.doSearch(
-        searchCriteria
-      );
+      const companiesByDomain =
+        await hubspotClient.crm.companies.searchApi.doSearch(searchCriteria);
       if (companiesByDomain.body.results.length > 0) {
         res.send(companiesByDomain.body.results[0]);
       } else {
@@ -173,20 +171,18 @@ apiRouter.get("/properties/:accessToken", async (req, res, next) => {
   };
   hubspotClient.setAccessToken(accessToken);
   const checkForPropInfo = async () => {
-    const existingPropertyGroups = await hubspotClient.crm.properties.groupsApi.getAll(
-      "contacts"
-    );
+    const existingPropertyGroups =
+      await hubspotClient.crm.properties.groupsApi.getAll("contacts");
 
     const groupExists = existingPropertyGroups.body.results.find(
       (group) => group.name === propertyGroupInfo.name
     );
     if (groupExists) {
       const getAllExistingProperties = async (startingProperties, offset) => {
-        const pageOfProperties = await hubspotClient.crm.properties.coreApi.getAll(
-          "contacts",
-          false,
-          { offset }
-        );
+        const pageOfProperties =
+          await hubspotClient.crm.properties.coreApi.getAll("contacts", false, {
+            offset,
+          });
         const endingProperties = startingProperties.concat(
           pageOfProperties.body.results
         );
@@ -211,10 +207,11 @@ apiRouter.get("/properties/:accessToken", async (req, res, next) => {
       }
     } else {
       try {
-        const groupResponse = await hubspotClient.crm.properties.groupsApi.create(
-          "contacts",
-          propertyGroupInfo
-        );
+        const groupResponse =
+          await hubspotClient.crm.properties.groupsApi.create(
+            "contacts",
+            propertyGroupInfo
+          );
         const propertiesResponse = await createProperty(propertyGroupInfo.name);
         res.send(propertiesResponse);
       } catch (err) {
@@ -250,7 +247,7 @@ apiRouter.post("/timeline/:accessToken", async (req, res, next) => {
 
 app.use("/api", apiRouter);
 
-app.use("/webhook", webhookRouter);
+// app.use("/webhook", webhookRouter);
 
 app.use((err, req, res, next) => {
   res.status(500).send(err.toString());
