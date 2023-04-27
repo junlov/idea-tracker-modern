@@ -35,7 +35,7 @@ const { CLIENT_ID, BASE_URL, SCOPES, CLIENT_SECRET, KAFKA_BROKER_LIST } =
 
 // consumer.on("message", (message) => {
 //   console.log(message);
-//   userHandler(message);
+// userHandler(message);
 // });
 
 // consumer.on("error", (err) => {
@@ -50,7 +50,7 @@ const getAndSaveHubSpotContacts = async (accessToken) => {
   console.log("Getting Contacts From HubSpot");
   try {
     const hubspotContacts = await axios.get(
-      `http://hubspot_service:8080/api/contacts/${accessToken}`
+      `http://localhost:8081/api/contacts/${accessToken}`
     );
     for (const contact of hubspotContacts.data) {
       const user = await Users.findOneAndUpdate(
@@ -67,7 +67,7 @@ const setUpHubSpotProperties = async (accessToken) => {
   console.log("Setting Up Properties");
   try {
     propertiesResponse = await axios.get(
-      `http://hubspot_service:8080/api/properties/${accessToken}`
+      `http://localhost:8081/api/properties/${accessToken}`
     );
   } catch (err) {
     console.log(err);
@@ -85,7 +85,7 @@ const updateExistingHubSpotContacts = async (accessToken, pageNumber) => {
       { skip, limit: CONTACTS_PER_PAGE }
     );
     await axios.post(
-      `http://hubspot_service:8080/api/contacts/update/${accessToken}`,
+      `http://localhost:8081/api/contacts/update/${accessToken}`,
       pageOfContactsFromDB
     );
     console.log(pageOfContactsFromDB);
@@ -112,7 +112,7 @@ const createExistingContacts = async (accessToken, pageNumber) => {
       { skip, limit: CONTACTS_PER_PAGE }
     );
     const createResponse = await axios.post(
-      `http://hubspot_service:8080/api/contacts/create/${accessToken}`,
+      `http://localhost:8081/api/contacts/create/${accessToken}`,
       pageOfContactsFromDB
     );
 
@@ -141,7 +141,7 @@ const createOrUpdateCompanies = async (accessToken) => {
     const allFactions = await Faction.find({});
     for (const faction of allFactions) {
       const company = await axios.get(
-        `http://hubspot_service:8080/api/companies/create-or-update/${faction.domain}/${accessToken}`
+        `http://localhost:8081/api/companies/create-or-update/${faction.domain}/${accessToken}`
       );
 
       await new Promise((resolve) => setTimeout(resolve, 1000));

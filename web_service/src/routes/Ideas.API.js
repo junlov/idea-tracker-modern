@@ -5,12 +5,9 @@ var ideaRouter = express.Router();
 const createTimeLineEvent = async (idea) => {
   const accessToken = await getAccessToken(1);
   try {
-    await axios.post(
-      `http://hubspot_service:8080/api/timeline/${accessToken}`,
-      {
-        idea,
-      }
-    );
+    await axios.post(`http://localhost:8081/api/timeline/${accessToken}`, {
+      idea,
+    });
   } catch (err) {
     console.log(err);
   }

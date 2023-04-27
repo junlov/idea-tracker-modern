@@ -9,7 +9,7 @@ const updateContactOnSave = async (contactToUpdate) => {
   const accessToken = await getAccessToken(1);
   try {
     await axios.put(
-      `http://hubspot_service:8080/api/contacts/update-one/${accessToken}`,
+      `http://localhost:8081/api/contacts/update-one/${accessToken}`,
       { contactToUpdate }
     );
   } catch (err) {
