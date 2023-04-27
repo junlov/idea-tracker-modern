@@ -25,6 +25,8 @@ import Profile from "./Users/Profile";
 
 import "./App.css";
 
+const { VITE_CONNECT } = import.meta.env;
+
 function App() {
   const [user, setUser] = useState({});
 
@@ -44,7 +46,10 @@ function App() {
             </MaterialLink>
           </Typography>
           <Typography className="full-width" variant="h6">
-            <MaterialLink href="/oauth/connect" style={{ color: "white" }}>
+            <MaterialLink
+              href={`${VITE_CONNECT}/oauth/connect`}
+              style={{ color: "white" }}
+            >
               Connect to HS
             </MaterialLink>
           </Typography>

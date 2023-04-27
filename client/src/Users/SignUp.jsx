@@ -45,7 +45,7 @@ const SignUp = (props) => {
       body,
     };
     const userSignUpRequest = new Request(
-      "http://localhost:8080/api/users/",
+      `${VITE_CONNECT}/api/users/`,
       userSignUpOptions
     );
     const response = await fetch(userSignUpRequest);

@@ -9,6 +9,8 @@ import {
 import { Close } from "@mui/icons-material";
 import { Redirect } from "react-router-dom";
 
+const { VITE_CONNECT } = import.meta.env;
+
 const Profile = (props) => {
   const { user, setUser } = props;
   const [updateSuccess, setUpdateSuccess] = useState(false);
@@ -35,7 +37,11 @@ const Profile = (props) => {
       headers: userEditHeaders,
       body,
     };
-    const userEditRequest = new Request("/api/users/", userEditOptions);
+    console.log("VITE_CONNECT", VITE_CONNECT);
+    const userEditRequest = new Request(
+      `${VITE_CONNECT}/api/users/`,
+      userEditOptions
+    );
     const response = await fetch(userEditRequest);
     if (response.status === 200) {
       const responseJSON = await response.json();

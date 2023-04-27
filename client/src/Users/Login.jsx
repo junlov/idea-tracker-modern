@@ -10,6 +10,8 @@ import {
 import { Close } from "@mui/icons-material";
 import { Redirect, Link } from "react-router-dom";
 
+const { VITE_CONNECT } = import.meta.env;
+
 const Login = (props) => {
   const { setUser } = props;
   const [potentialUser, setPotentialUser] = useState({
@@ -32,7 +34,11 @@ const Login = (props) => {
       headers: userLoginHeaders,
       body,
     };
-    const userLoginRequest = new Request("/api/users/login", userLoginOptions);
+    console.log("VITE_CONNECT", VITE_CONNECT);
+    const userLoginRequest = new Request(
+      `${VITE_CONNECT}/api/users/login`,
+      userLoginOptions
+    );
     const response = await fetch(userLoginRequest);
     console.log(response.status);
     if (response.status === 200) {
