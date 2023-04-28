@@ -46,17 +46,31 @@ const REDIRECT_URL = `${BASE_URL}/oauth/callback`;
 
 app.use(bodyParser.json());
 
+const getContacts = async (accessToken) => {
+  console.log("Getting Contacts From HubSpot");
+  try {
+    const hubspotContacts = await axios.get(
+      `http://localhost:8081/api/contacts/${accessToken}`
+    );
+
+    console.log("Hubspot_contacts", hubspotContacts);
+
+    for (const contact of hubspotContacts.data) {
+      const user = await Users.findOneAndUpdate(
+        { email: contact.properties.email },
+        { hubspotContactId: contact.id }
+      );
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const getAndSaveHubSpotContacts = async (accessToken) => {
   console.log("Getting Contacts From HubSpot");
   try {
     const hubspotContacts = await axios.get(
-      `http://localhost:8081/api/contacts/${accessToken}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
+      `http://localhost:8081/api/contacts/${accessToken}`
     );
     for (const contact of hubspotContacts.data) {
       const user = await Users.findOneAndUpdate(
@@ -73,13 +87,7 @@ const setUpHubSpotProperties = async (accessToken) => {
   console.log("Setting Up Properties");
   try {
     propertiesResponse = await axios.get(
-      `http://localhost:8081/api/properties/${accessToken}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
+      `http://localhost:8081/api/properties/${accessToken}`
     );
   } catch (err) {
     console.log(err);
@@ -98,12 +106,6 @@ const updateExistingHubSpotContacts = async (accessToken, pageNumber) => {
     );
     await axios.post(
       `http://localhost:8081/api/contacts/update/${accessToken}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      },
       pageOfContactsFromDB
     );
     console.log(pageOfContactsFromDB);
@@ -131,12 +133,6 @@ const createExistingContacts = async (accessToken, pageNumber) => {
     );
     const createResponse = await axios.post(
       `http://localhost:8081/api/contacts/create/${accessToken}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      },
       pageOfContactsFromDB
     );
 
@@ -165,13 +161,7 @@ const createOrUpdateCompanies = async (accessToken) => {
     const allFactions = await Faction.find({});
     for (const faction of allFactions) {
       const company = await axios.get(
-        `http://localhost:8081/api/companies/create-or-update/${faction.domain}/${accessToken}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
+        `http://localhost:8081/api/companies/create-or-update/${faction.domain}/${accessToken}`
       );
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -183,11 +173,12 @@ const createOrUpdateCompanies = async (accessToken) => {
 };
 
 const initialSyncWithHubSpot = async (accessToken) => {
-  await getAndSaveHubSpotContacts(accessToken);
-  await setUpHubSpotProperties(accessToken);
-  await updateExistingHubSpotContacts(accessToken, 0);
-  await createExistingContacts(accessToken, 0);
-  await createOrUpdateCompanies(accessToken);
+  await getContacts(accessToken);
+  // await getAndSaveHubSpotContacts(accessToken);
+  // await setUpHubSpotProperties(accessToken);
+  // await updateExistingHubSpotContacts(accessToken, 0);
+  // await createExistingContacts(accessToken, 0);
+  // await createOrUpdateCompanies(accessToken);
 };
 
 app.get("/oauth/connect", async (req, res) => {

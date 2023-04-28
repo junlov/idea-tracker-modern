@@ -15,6 +15,53 @@ app.use(bodyParser.json());
 
 const hubspotClient = new hubspot.Client();
 
+type Contacts = {
+  id: number;
+  properties: Object;
+  createdAt: Date;
+  updatedAt: Date;
+  archived: boolean;
+};
+
+// * Junior Test
+apiRouter.get(
+  "/contacts/:accessToken",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { accessToken } = req.params;
+    hubspotClient.setAccessToken(accessToken);
+
+    // const contacts = await hubspotClient.crm.contacts.getAll();
+
+    // res.status(200).send(contacts);
+
+    try {
+      const getAllContacts1 = async (
+        offset: number,
+        startingContacts: Contacts[]
+      ) => {
+        const pageOfContacts =
+          await hubspotClient.crm.contacts.basicApi.getPage(100, offset);
+        console.log(pageOfContacts.body.results);
+        const endingContacts = startingContacts.concat(
+          pageOfContacts.body.results
+        );
+        if (pageOfContacts.body.paging) {
+          return await getAllContacts1(
+            pageOfContacts.body.paging.next.after,
+            endingContacts
+          );
+        } else {
+          return endingContacts;
+        }
+      };
+      const allContacts = await getAllContacts1(0, []);
+      res.status(200).send(allContacts);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 apiRouter.get(
   "/contacts/:accessToken",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -22,7 +69,10 @@ apiRouter.get(
     hubspotClient.setAccessToken(accessToken);
 
     try {
-      const getAllContacts = async (offset, startingContacts) => {
+      const getAllContacts = async (
+        offset: number,
+        startingContacts: Contacts[]
+      ) => {
         const pageOfContacts =
           await hubspotClient.crm.contacts.basicApi.getPage(100, offset);
         // console.log(pageOfContacts.body.results);
@@ -275,7 +325,7 @@ app.use("/api", apiRouter);
 
 // app.use("/webhook", webhookRouter);
 
-app.use((err, req, res, next) => {
+app.use((err, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send(err.toString());
 });
 
