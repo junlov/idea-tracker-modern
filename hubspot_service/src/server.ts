@@ -3,8 +3,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const bodyParser = require("body-parser");
-const hubspot = require("@hubspot/api-client");
+import bodyParser from "body-parser";
+import { hubspotClient } from "./hubspotClient";
 
 // const webhookRouter = require("./webhooks");
 
@@ -12,8 +12,6 @@ const app: Express = express();
 const apiRouter = express.Router();
 
 app.use(bodyParser.json());
-
-const hubspotClient = new hubspot.Client();
 
 type Contacts = {
   id: number;
@@ -23,45 +21,6 @@ type Contacts = {
   archived: boolean;
 };
 
-// * Junior Test
-apiRouter.get(
-  "/contacts/:accessToken",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { accessToken } = req.params;
-    hubspotClient.setAccessToken(accessToken);
-
-    // const contacts = await hubspotClient.crm.contacts.getAll();
-
-    // res.status(200).send(contacts);
-
-    try {
-      const getAllContacts1 = async (
-        offset: number,
-        startingContacts: Contacts[]
-      ) => {
-        const pageOfContacts =
-          await hubspotClient.crm.contacts.basicApi.getPage(100, offset);
-        console.log(pageOfContacts.body.results);
-        const endingContacts = startingContacts.concat(
-          pageOfContacts.body.results
-        );
-        if (pageOfContacts.body.paging) {
-          return await getAllContacts1(
-            pageOfContacts.body.paging.next.after,
-            endingContacts
-          );
-        } else {
-          return endingContacts;
-        }
-      };
-      const allContacts = await getAllContacts1(0, []);
-      res.status(200).send(allContacts);
-    } catch (err) {
-      next(err);
-    }
-  }
-);
-
 apiRouter.get(
   "/contacts/:accessToken",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -70,28 +29,23 @@ apiRouter.get(
 
     try {
       const getAllContacts = async (
-        offset: number,
+        offset: string,
         startingContacts: Contacts[]
       ) => {
         const pageOfContacts =
           await hubspotClient.crm.contacts.basicApi.getPage(100, offset);
-        // console.log(pageOfContacts.body.results);
-
-        const endingContacts = startingContacts.concat(
-          pageOfContacts.body.results
-        );
-
-        if (pageOfContacts.body.paging) {
+        console.log(pageOfContacts.results);
+        const endingContacts = startingContacts.concat(pageOfContacts.results);
+        if (pageOfContacts.paging) {
           return await getAllContacts(
-            pageOfContacts.body.paging.next.after,
+            pageOfContacts.paging.next.after,
             endingContacts
           );
         } else {
           return endingContacts;
         }
       };
-      const allContacts = await getAllContacts(0, []);
-
+      const allContacts = await getAllContacts1(0, []);
       res.status(200).send(allContacts);
     } catch (err) {
       next(err);

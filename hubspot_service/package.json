@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "The service used to make the API calls to HubSpot",
   "scripts": {
-    "node:dev": "nodemon ./dist/server.js",
+    "node:dev": "nodemon --exec babel-node ./dist/server.js",
     "type:dev": "npx tsc --watch",
     "dev": "concurrently \"npm:node:dev\" \"npm:type:dev\"",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,6 +17,9 @@
     "typescript": "^5.0.4"
   },
   "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@babel/node": "^7.20.7",
+    "@babel/preset-env": "^7.21.4",
     "@types/express": "^4.17.17",
     "@types/node": "^18.16.1",
     "concurrently": "^8.0.1",
