@@ -10,17 +10,17 @@ const userHandler = async (message) => {
   try {
     const user = await Users.findOne({ hubspotContactId: objectId });
     if (user) {
-      console.log("propertyName", propertyName);
+      // console.log("propertyName", propertyName);
       const fieldToCheck = fieldMapping[propertyName];
-      console.log("fieldToCheck", fieldToCheck);
+      // console.log("fieldToCheck", fieldToCheck);
       if (fieldToCheck) {
         if (user[fieldToCheck] !== propertyValue) {
           //check history
-          console.log(
-            "whenmodifed",
-            user.propertyHistory[`${fieldToCheck}History`][0].whenModified
-          );
-          console.log("occurredAt", occurredAt);
+          // console.log(
+          //   "whenmodifed",
+          //   user.propertyHistory[`${fieldToCheck}History`][0].whenModified
+          // );
+          // console.log("occurredAt", occurredAt);
           const lastModifiedFromDB = Date.parse(
             user.propertyHistory[`${fieldToCheck}History`][0].whenModified
           );

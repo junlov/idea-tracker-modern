@@ -5,6 +5,11 @@ dotenv.config();
 
 import bodyParser from "body-parser";
 import { hubspotClient } from "./hubspotClient";
+import {
+  Property,
+  PropertyCreate,
+  PropertyGroup,
+} from "@hubspot/api-client/lib/codegen/crm/properties";
 
 // const webhookRouter = require("./webhooks");
 
@@ -28,24 +33,16 @@ apiRouter.get(
     hubspotClient.setAccessToken(accessToken);
 
     try {
-      const getAllContacts = async (
-        offset: string,
-        startingContacts: Contacts[]
-      ) => {
-        const pageOfContacts =
-          await hubspotClient.crm.contacts.basicApi.getPage(100, offset);
-        console.log(pageOfContacts.results);
-        const endingContacts = startingContacts.concat(pageOfContacts.results);
-        if (pageOfContacts.paging) {
-          return await getAllContacts(
-            pageOfContacts.paging.next.after,
-            endingContacts
-          );
-        } else {
-          return endingContacts;
-        }
+      const getAllContacts = async () => {
+        const pageOfContacts = await hubspotClient.crm.contacts.getAll();
+
+        // console.log(
+        // "🚀 ~ file: server.ts:38 ~ pageOfContacts.results:",
+        // pageOfContacts.results
+        // );
       };
-      const allContacts = await getAllContacts1(0, []);
+
+      const allContacts = await getAllContacts();
       res.status(200).send(allContacts);
     } catch (err) {
       next(err);
@@ -57,8 +54,13 @@ apiRouter.post(
   "/contacts/create/:accessToken",
   async (req: Request, res: Response, next: NextFunction) => {
     const { accessToken } = req.params;
+    // console.log("🚀 ~ file: server.ts:60 ~ req.params:", req.params);
+
     hubspotClient.setAccessToken(accessToken);
     const contactsToCreate = req.body;
+
+    // console.log("🚀 ~ file: server.ts:62 ~ req.body:", req.body);
+
     const inputs = contactsToCreate.map((contact) => {
       return {
         properties: {
@@ -71,10 +73,14 @@ apiRouter.post(
       };
     });
     try {
-      const createResponse =
-        await hubspotClient.crm.contacts.batchApi.createBatch({ inputs });
-      console.log(createResponse.body);
-      res.send(createResponse.body);
+      const createResponse = await hubspotClient.crm.contacts.batchApi.create({
+        inputs,
+      });
+      // console.log(
+      // "🚀 ~ file: server.ts:83 ~ createResponse.results:",
+      // createResponse.results
+      // );
+      res.send(createResponse.results);
     } catch (err) {
       next(err);
     }
@@ -97,10 +103,14 @@ apiRouter.post(
     });
 
     try {
-      const updateResponse =
-        await hubspotClient.crm.contacts.batchApi.updateBatch({ inputs });
-      console.log(updateResponse.body);
-      res.send(updateResponse.body);
+      const updateResponse = await hubspotClient.crm.contacts.batchApi.update({
+        inputs,
+      });
+      // console.log(
+      // "🚀 ~ file: server.ts:109 ~ updateResponse.results:",
+      // updateResponse.results
+      // );
+      res.send(updateResponse.results);
     } catch (err) {
       next(err);
     }
@@ -137,13 +147,13 @@ apiRouter.get(
     try {
       const companiesByDomain =
         await hubspotClient.crm.companies.searchApi.doSearch(searchCriteria);
-      if (companiesByDomain.body.results.length > 0) {
-        res.send(companiesByDomain.body.results[0]);
+      if (companiesByDomain.results.length > 0) {
+        res.send(companiesByDomain.results[0]);
       } else {
         const newCompany = await hubspotClient.crm.companies.basicApi.create({
           properties: { domain: faction },
         });
-        res.send(newCompany.body);
+        res.send(newCompany.properties);
       }
     } catch (err) {
       console.log(err);
@@ -156,13 +166,16 @@ apiRouter.get(
   "/properties/:accessToken",
   async (req: Request, res: Response, next: NextFunction) => {
     const { accessToken } = req.params;
-    const propertyGroupInfo = {
+
+    const propertyGroupInfo: PropertyGroup = {
       name: "ideatrackergroup",
       displayOrder: -1,
       label: "Idea Tracker Group",
+      archived: false,
     };
-    const createProperty = async (groupName) => {
-      const inputs = [
+
+    const createProperty = async (groupName: string) => {
+      const inputs: Array<PropertyCreate> = [
         {
           groupName,
           type: "number",
@@ -174,22 +187,20 @@ apiRouter.get(
           groupName,
           type: "string",
           label: "Faction Rank",
-          fieldType: "string",
+          fieldType: "text",
           name: "faction_rank",
         },
       ];
       try {
-        return await hubspotClient.crm.properties.batchApi.createBatch(
-          "contacts",
-          {
-            inputs,
-          }
-        );
+        return await hubspotClient.crm.properties.batchApi.create("contacts", {
+          inputs,
+        });
       } catch (err) {
         next(err);
       }
     };
     hubspotClient.setAccessToken(accessToken);
+
     const checkForPropInfo = async () => {
       const existingPropertyGroups =
         await hubspotClient.crm.properties.groupsApi.getAll("contacts");
@@ -198,31 +209,32 @@ apiRouter.get(
         (group) => group.name === propertyGroupInfo.name
       );
       if (groupExists) {
-        const getAllExistingProperties = async (startingProperties, offset) => {
+        const getAllExistingProperties = async (startingProperties) => {
           const pageOfProperties =
             await hubspotClient.crm.properties.coreApi.getAll(
               "contacts",
-              false,
-              {
-                offset,
-              }
+              false
             );
+
           const endingProperties = startingProperties.concat(
-            pageOfProperties.body.results
+            pageOfProperties.results
           );
-          if (pageOfProperties.body.paging) {
-            return await getAllExistingProperties(
-              endingProperties,
-              pageOfProperties.body.page.next.after
-            );
+
+          if (pageOfProperties.paging) {
+            return await getAllExistingProperties(endingProperties);
           } else return endingProperties;
         };
-        const allProperties = await getAllExistingProperties([], 0);
-        const existingProperties = allProperties.filter((property) => {
-          property.name === "faction_rank" ||
-            property.name === "num_ideas_submitted";
-        });
+
+        const allProperties = await getAllExistingProperties([]);
+        const existingProperties = allProperties.filter(
+          (property: Property) => {
+            property.name === "faction_rank" ||
+              property.name === "num_ideas_submitted";
+          }
+        );
+
         console.log(existingProperties);
+
         if (existingProperties.length === 0) {
           await createProperty(propertyGroupInfo.name);
           res.send("Properties Created");
@@ -257,7 +269,7 @@ apiRouter.post(
     const { accessToken } = req.params;
     hubspotClient.setAccessToken(accessToken);
     const timelineEvent = {
-      eventTemplateId: "1003035",
+      eventTemplateId: "1227539",
       objectId: idea.author.hubspotContactId,
       tokens: {
         idea_title: idea.title,
@@ -279,7 +291,7 @@ app.use("/api", apiRouter);
 
 // app.use("/webhook", webhookRouter);
 
-app.use((err, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send(err.toString());
 });
 

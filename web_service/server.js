@@ -62,7 +62,7 @@ const getContacts = async (accessToken) => {
       );
     }
   } catch (err) {
-    console.log(err);
+    console.log(err.data.body);
   }
 };
 
@@ -79,7 +79,7 @@ const getAndSaveHubSpotContacts = async (accessToken) => {
       );
     }
   } catch (err) {
-    console.log(err);
+    console.log(err.data.body);
   }
 };
 
@@ -90,7 +90,7 @@ const setUpHubSpotProperties = async (accessToken) => {
       `http://localhost:8081/api/properties/${accessToken}`
     );
   } catch (err) {
-    console.log(err);
+    console.log(err.data.body);
   }
 };
 
@@ -108,7 +108,7 @@ const updateExistingHubSpotContacts = async (accessToken, pageNumber) => {
       `http://localhost:8081/api/contacts/update/${accessToken}`,
       pageOfContactsFromDB
     );
-    console.log(pageOfContactsFromDB);
+    // console.log(pageOfContactsFromDB);
     if (pageOfContactsFromDB.length > 0) {
       pageNumber++;
       return await updateExistingHubSpotContacts(accessToken, pageNumber);
@@ -117,7 +117,7 @@ const updateExistingHubSpotContacts = async (accessToken, pageNumber) => {
       return;
     }
   } catch (err) {
-    console.log(err);
+    console.log(err.data.body);
   }
 };
 
@@ -142,7 +142,7 @@ const createExistingContacts = async (accessToken, pageNumber) => {
         { hubspotContactId: contact.id }
       );
     }
-    console.log(pageOfContactsFromDB);
+    // console.log(pageOfContactsFromDB);
     if (pageOfContactsFromDB.length > 0) {
       pageNumber++;
       return await createExistingContacts(accessToken, pageNumber);
@@ -176,9 +176,9 @@ const initialSyncWithHubSpot = async (accessToken) => {
   await getContacts(accessToken);
   // await getAndSaveHubSpotContacts(accessToken);
   // await setUpHubSpotProperties(accessToken);
-  // await updateExistingHubSpotContacts(accessToken, 0);
+  await updateExistingHubSpotContacts(accessToken, 0);
   // await createExistingContacts(accessToken, 0);
-  // await createOrUpdateCompanies(accessToken);
+  await createOrUpdateCompanies(accessToken);
 };
 
 app.get("/oauth/connect", async (req, res) => {
@@ -195,7 +195,6 @@ app.get("/oauth/callback", async (req, res, next) => {
   const { code } = req.query;
   console.log("Callback - does it do anything here?");
   try {
-    console.log("Step 0");
     const tokensResponse = await hubspotClient.oauth.tokensApi.createToken(
       "authorization_code",
       code,
@@ -203,14 +202,10 @@ app.get("/oauth/callback", async (req, res, next) => {
       CLIENT_ID,
       CLIENT_SECRET
     );
-    console.log("Step 1");
-    console.log("tokenResponse", tokensResponse);
 
     const { accessToken, refreshToken, expiresIn } = tokensResponse;
-    console.log("Step 2");
 
     const expiresAt = new Date(Date.now() + expiresIn);
-    console.log("Step 3");
 
     const accountInfo = await Account.findOneAndUpdate(
       { accountId: 1 },
@@ -221,7 +216,6 @@ app.get("/oauth/callback", async (req, res, next) => {
     initialSyncWithHubSpot(accessToken);
     res.redirect("/");
   } catch (err) {
-    console.log("/oauth/callback error");
     next(err);
   }
 });
@@ -235,7 +229,6 @@ app.use(function (req, res, next) {
 });
 
 app.use((err, req, res, next) => {
-  console.log("It just ends here...500");
   console.log(err.toString());
   res.status(500).send(err.toString());
 });

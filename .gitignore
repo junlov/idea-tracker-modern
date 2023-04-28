@@ -116,3 +116,4 @@ mongo-volume/
 .mongo-volume/
 
 web_service/ssl/
+.DS_Store
