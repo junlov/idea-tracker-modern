@@ -62,7 +62,7 @@ const getContacts = async (accessToken) => {
       );
     }
   } catch (err) {
-    console.log(err.data.body);
+    console.log(err.data?.body);
   }
 };
 
@@ -79,7 +79,7 @@ const getAndSaveHubSpotContacts = async (accessToken) => {
       );
     }
   } catch (err) {
-    console.log(err.data.body);
+    console.log(err.data?.body);
   }
 };
 
@@ -90,7 +90,7 @@ const setUpHubSpotProperties = async (accessToken) => {
       `http://localhost:8081/api/properties/${accessToken}`
     );
   } catch (err) {
-    console.log(err.data.body);
+    console.log(err.data?.body);
   }
 };
 
@@ -117,7 +117,7 @@ const updateExistingHubSpotContacts = async (accessToken, pageNumber) => {
       return;
     }
   } catch (err) {
-    console.log(err.data.body);
+    console.log(err.data?.body);
   }
 };
 
@@ -174,10 +174,10 @@ const createOrUpdateCompanies = async (accessToken) => {
 
 const initialSyncWithHubSpot = async (accessToken) => {
   await getContacts(accessToken);
-  // await getAndSaveHubSpotContacts(accessToken);
-  // await setUpHubSpotProperties(accessToken);
+  await getAndSaveHubSpotContacts(accessToken);
+  await setUpHubSpotProperties(accessToken);
   await updateExistingHubSpotContacts(accessToken, 0);
-  // await createExistingContacts(accessToken, 0);
+  await createExistingContacts(accessToken, 0);
   await createOrUpdateCompanies(accessToken);
 };
 
