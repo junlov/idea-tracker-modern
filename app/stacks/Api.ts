@@ -1,4 +1,4 @@
-import { StackContext, Api, StaticSite } from "sst/constructs";
+import { StackContext, Api, StaticSite, Auth } from "sst/constructs";
 
 export function usersApi({ stack }: StackContext) {
   const api = new Api(stack, "ideaTrackerApi", {
@@ -26,6 +26,17 @@ export function usersApi({ stack }: StackContext) {
     environment: {
       VITE_APP_API_URL: api.url,
     },
+  });
+
+  const auth = new Auth(stack, "auth", {
+    authenticator: {
+      handler: "packages/functions/src/Auth/auth.handler",
+    },
+  });
+
+  auth.attach(stack, {
+    api,
+    prefix: "/auth",
   });
 
   stack.addOutputs({
