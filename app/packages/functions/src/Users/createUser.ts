@@ -1,6 +1,6 @@
 import { ApiHandler } from "sst/node/api";
 import { connectToDatabase } from "@app/core/src/database/connection";
-import { User } from "../../../core/src/actions/User.actions";
+import { _userAction } from "../../../core/src/actions/User.actions";
 
 interface User {
   email: string;
@@ -24,7 +24,7 @@ export const handler = ApiHandler(async (_evt, _ctx) => {
     throw Error("Email is required");
   }
 
-  const createUser = await User.create(email);
+  const createUser = await _userAction.create(email);
 
   return {
     statusCode: 200,

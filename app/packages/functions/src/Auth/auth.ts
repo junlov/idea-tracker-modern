@@ -1,6 +1,7 @@
 import { AuthHandler, GoogleAdapter, Session } from "sst/node/auth";
 import { Users } from "@app/core/database/models/Users.model";
 import { _userAction } from "@app/core/actions/User.actions";
+import { connectToDatabase } from "@app/core/database/connection";
 
 export const handler = AuthHandler({
   providers: {
@@ -15,14 +16,16 @@ export const handler = AuthHandler({
           throw new Error("No email");
         }
 
-        let exists = await _userAction.fromEmail(claims.email);
+        await connectToDatabase();
+
+        let exists: any = await _userAction.fromEmail(claims.email);
 
         if (!exists) {
           exists = await _userAction.create(claims.email);
         }
 
         // Redirects to https://example.com?token=xxx
-        return Session.parameter({
+        return Session.cookie({
           redirect: "https://zas111w4li.execute-api.us-east-1.amazonaws.com",
           type: "user",
           properties: {
