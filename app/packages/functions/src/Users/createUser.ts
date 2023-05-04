@@ -1,7 +1,10 @@
-import { Faction } from "@app/core/src/database/models/Factions.model";
 import { ApiHandler } from "sst/node/api";
-import { Users } from "@app/core/src/database/models/Users.model";
 import { connectToDatabase } from "@app/core/src/database/connection";
+import { User } from "../../../core/src/actions/User.actions";
+
+interface User {
+  email: string;
+}
 
 export const handler = ApiHandler(async (_evt, _ctx) => {
   // By default, the callback waits until the runtime event loop is empty
@@ -14,30 +17,17 @@ export const handler = ApiHandler(async (_evt, _ctx) => {
   // Get an instance of our database
   const db = await connectToDatabase();
 
-  const user: { email: string } | undefined = JSON.parse(_evt.body);
+  const user = JSON.parse(_evt.body);
   const { email } = user;
 
   if (!email) {
     throw Error("Email is required");
   }
 
-  const domain = email.substring(email.lastIndexOf("@") + 1);
-
-  const newUser = await new Users(user);
-
-  const savedUser = await newUser.save();
-  const faction = await Faction.findOneAndUpdate(
-    {
-      domain,
-    },
-    {
-      $push: { members: savedUser._id },
-    },
-    { upsert: true, new: true }
-  );
+  const createUser = await User.create(email);
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ savedUser, faction }),
+    body: createUser,
   };
 });

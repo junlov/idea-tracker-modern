@@ -1,6 +1,12 @@
 import { StackContext, Api, StaticSite, Auth } from "sst/constructs";
 
 export function usersApi({ stack }: StackContext) {
+  const auth = new Auth(stack, "auth", {
+    authenticator: {
+      handler: "packages/functions/src/Auth/auth.handler",
+    },
+  });
+
   const api = new Api(stack, "ideaTrackerApi", {
     defaults: {
       function: {
@@ -25,12 +31,6 @@ export function usersApi({ stack }: StackContext) {
     buildOutput: "dist",
     environment: {
       VITE_APP_API_URL: api.url,
-    },
-  });
-
-  const auth = new Auth(stack, "auth", {
-    authenticator: {
-      handler: "packages/functions/src/Auth/auth.handler",
     },
   });
 
