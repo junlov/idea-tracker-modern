@@ -1,27 +1,7 @@
 import { ApiHandler } from "sst/node/api";
 import mongoose from "mongoose";
 import { Users } from "@app/core/src/database/models/Users.model";
-
-// Once we connect to the database once, we'll store that connection
-// and reuse it so that we don't have to connect to the database on every request.
-let cachedDb: any = null;
-
-async function connectToDatabase() {
-  if (cachedDb) {
-    return cachedDb;
-  }
-
-  // Connect to our MongoDB database hosted on MongoDB Atlas
-  mongoose.set("strictQuery", false);
-
-  // Specify which database we want to use
-  cachedDb = await mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
-  return cachedDb;
-}
+import { connectToDatabase } from "@app/core/src/database/connection";
 
 export const handler = ApiHandler(async (_evt, _ctx) => {
   // By default, the callback waits until the runtime event loop is empty

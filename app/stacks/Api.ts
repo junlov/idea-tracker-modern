@@ -13,6 +13,7 @@ export function usersApi({ stack }: StackContext) {
       "GET /users": "packages/functions/src/Users/getAllUsers.handler",
       "POST /users": "packages/functions/src/Users/createUser.handler",
       "DELETE /users": "packages/functions/src/Users/deleteAllUsers.handler",
+      "PUT /users": "packages/functions/src/Users/updateUser.handler",
     },
   });
 
