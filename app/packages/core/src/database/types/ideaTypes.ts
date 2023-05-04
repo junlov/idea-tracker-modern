@@ -10,13 +10,37 @@ export interface IUser {
   numLogins: number;
   hubspotContactId?: string;
   rank?: string;
-  // propertyHistory?: IUserHistory;
+  propertyHistory?: IUserHistory;
 }
 
-export interface IUserHistory {}
+export interface IPropertyHistory {
+  value: string;
+  whenModified: Date;
+}
+export interface IUserHistory {
+  firstNameHistory: IPropertyHistory;
+  lastNameHistory: IPropertyHistory;
+  rankHistory: IPropertyHistory;
+  emailHistory: IPropertyHistory;
+}
 
-export interface IIdeas {}
+export interface IIdeas {
+  title: string;
+  detail: string;
+  date: Date;
+  author: string | undefined;
+}
 
-export interface IFactions {}
+export interface IFactions {
+  domain: string;
+  hubspotCompanyId: string;
+  name: string;
+  members: string;
+}
 
-export interface IAccounts {}
+export interface IAccounts {
+  accountId: number;
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: Date;
+}

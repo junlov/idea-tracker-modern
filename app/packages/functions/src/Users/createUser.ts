@@ -34,11 +34,22 @@ export const handler = ApiHandler(async (_evt, _ctx) => {
   // Get an instance of our database
   const db = await connectToDatabase();
 
-  // Make a MongoDB MQL Query
-  const users = await Users.deleteMany({});
+  const user: string | undefined = JSON.parse(_evt.body);
+  const { email } = user;
+
+  if (!email) {
+    throw Error("Email is required");
+  }
+
+  const domain = email.substring(email.lastIndexOf("@") + 1);
+
+  const newUser = await new Users(user);
+  const save = await newUser.save();
+
+  console.log(newUser);
 
   return {
     statusCode: 200,
-    body: "Deleted all users",
+    body: `User ${newUser} is successfully created`,
   };
 });

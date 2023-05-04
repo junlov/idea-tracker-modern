@@ -1,6 +1,6 @@
 import { ApiHandler } from "sst/node/api";
 import mongoose from "mongoose";
-import { User } from "@app/core/src/Users.model";
+import { Users } from "@app/core/src/database/models/Users.model";
 
 // Once we connect to the database once, we'll store that connection
 // and reuse it so that we don't have to connect to the database on every request.
@@ -35,7 +35,7 @@ export const handler = ApiHandler(async (_evt, _ctx) => {
   const db = await connectToDatabase();
 
   // Make a MongoDB MQL Query
-  const users = await User.find({});
+  const users = await Users.find({});
 
   return {
     statusCode: 200,

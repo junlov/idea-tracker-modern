@@ -1,5 +1,6 @@
 import { Schema, model, connect } from "mongoose";
 import { IUser } from "../types/ideaTypes";
+import { userHistorySchema } from "./UserHistory.model";
 
 const userSchema = new Schema<IUser>({
   firstName: {
@@ -40,7 +41,7 @@ const userSchema = new Schema<IUser>({
   rank: {
     type: String,
   },
-  // propertyHistory: { type: userHistorySchema },
+  propertyHistory: { type: userHistorySchema },
 });
 
 export const Users = model<IUser>("User", userSchema);

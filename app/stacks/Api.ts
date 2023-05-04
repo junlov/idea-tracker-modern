@@ -1,7 +1,7 @@
 import { StackContext, Api, StaticSite } from "sst/constructs";
 
 export function usersApi({ stack }: StackContext) {
-  const api = new Api(stack, "usersApi", {
+  const api = new Api(stack, "ideaTrackerApi", {
     defaults: {
       function: {
         environment: {
@@ -11,7 +11,7 @@ export function usersApi({ stack }: StackContext) {
     },
     routes: {
       "GET /users": "packages/functions/src/Users/getAllUsers.handler",
-      "POST /users": "packages/functions/src/lambda.handler",
+      "POST /users": "packages/functions/src/Users/createUser.handler",
       "DELETE /users": "packages/functions/src/Users/deleteAllUsers.handler",
     },
   });
