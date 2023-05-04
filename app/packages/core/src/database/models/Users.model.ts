@@ -1,19 +1,5 @@
 import { Schema, model, connect } from "mongoose";
-
-interface IUser {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  numIdeasSubmitted?: number;
-  numCommentsLeft?: number;
-  signUpDate: Date;
-  lastLoginDate: Date;
-  numLogins: number;
-  hubspotContactId?: string;
-  rank?: string;
-  // propertyHistory?: IUserHistory;
-}
+import { IUser } from "../types/ideaTypes";
 
 const userSchema = new Schema<IUser>({
   firstName: {
@@ -57,4 +43,4 @@ const userSchema = new Schema<IUser>({
   // propertyHistory: { type: userHistorySchema },
 });
 
-export const User = model<IUser>("User", userSchema);
+export const Users = model<IUser>("User", userSchema);
