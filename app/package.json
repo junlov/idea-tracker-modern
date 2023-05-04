@@ -22,6 +22,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "@aws-sdk/client-sns": "^3.327.0",
     "mongoose": "^7.1.0",
     "web": "^0.0.2"
   }

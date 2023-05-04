@@ -1,4 +1,11 @@
-import { StackContext, Api, StaticSite, Auth } from "sst/constructs";
+import {
+  StackContext,
+  Api,
+  StaticSite,
+  Auth,
+  Queue,
+  Topic,
+} from "sst/constructs";
 
 export function usersApi({ stack }: StackContext) {
   const auth = new Auth(stack, "auth", {
@@ -7,9 +14,16 @@ export function usersApi({ stack }: StackContext) {
     },
   });
 
+  const topic = new Topic(stack, "Ordered", {
+    subscribers: {
+      primary: "packages/functions/src/Queue/consumer.handler",
+    },
+  });
+
   const api = new Api(stack, "ideaTrackerApi", {
     defaults: {
       function: {
+        bind: [topic],
         environment: {
           MONGODB_URI: process.env.MONGODB_URI,
         },
@@ -22,6 +36,7 @@ export function usersApi({ stack }: StackContext) {
       "PUT /users": "packages/functions/src/Users/updateUser.handler",
       "GET /ideas": "packages/functions/src/Ideas/getAllIdeas.handler",
       "POST /ideas": "packages/functions/src/Ideas/createNewIdea.handler",
+      "POST /timeline": "packages/functions/src/timeline.handler",
     },
   });
 
@@ -34,6 +49,10 @@ export function usersApi({ stack }: StackContext) {
     },
   });
 
+  const queue = new Queue(stack, "queue", {
+    consumer: "packages/functions/src/Queue/consumer.handler",
+  });
+
   auth.attach(stack, {
     api,
     prefix: "/auth",
@@ -42,5 +61,6 @@ export function usersApi({ stack }: StackContext) {
   stack.addOutputs({
     ApiEndpoint: api.url,
     StaticSite: web.url,
+    Queue: queue.queueUrl,
   });
 }
