@@ -14,6 +14,8 @@ export function usersApi({ stack }: StackContext) {
       "POST /users": "packages/functions/src/Users/createUser.handler",
       "DELETE /users": "packages/functions/src/Users/deleteAllUsers.handler",
       "PUT /users": "packages/functions/src/Users/updateUser.handler",
+      "GET /ideas": "packages/functions/src/Ideas/getAllIdeas.handler",
+      "POST /ideas": "packages/functions/src/Ideas/createNewIdea.handler",
     },
   });
 
