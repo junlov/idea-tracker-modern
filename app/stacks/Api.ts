@@ -1,7 +1,7 @@
 import { StackContext, Api, StaticSite } from "sst/constructs";
 
-export function API({ stack }: StackContext) {
-  const api = new Api(stack, "api", {
+export function usersApi({ stack }: StackContext) {
+  const api = new Api(stack, "usersApi", {
     defaults: {
       function: {
         environment: {
@@ -10,7 +10,9 @@ export function API({ stack }: StackContext) {
       },
     },
     routes: {
-      "GET /": "packages/functions/src/lambda.handler",
+      "GET /users": "packages/functions/src/Users/getAllUsers.handler",
+      "POST /users": "packages/functions/src/lambda.handler",
+      "DELETE /users": "packages/functions/src/Users/deleteAllUsers.handler",
     },
   });
 
